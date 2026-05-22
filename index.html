@@ -1,0 +1,1815 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Alien Vocabulary Invaders 👽</title>
+    <!-- Tailwind CSS untuk struktur asas yang cepat dan kemas -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts untuk fon bertema Arkad & Sains Fiksyen -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Press+Start+2P&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <!-- Ikon Lucide untuk butang-butang moden -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --neon-blue: #00f0ff;
+            --neon-green: #39ff14;
+            --neon-purple: #bd00ff;
+            --neon-pink: #ff007f;
+            --dark-bg: #03001e;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background-color: var(--dark-bg);
+            color: #fff;
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .font-arcade {
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        .font-orbitron {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* Kesan Neon Bercahaya */
+        .glow-blue {
+            text-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue);
+        }
+        .glow-green {
+            text-shadow: 0 0 10px var(--neon-green), 0 0 20px var(--neon-green);
+        }
+        .glow-purple {
+            text-shadow: 0 0 10px var(--neon-purple), 0 0 20px var(--neon-purple);
+        }
+        .border-glow-blue {
+            box-shadow: 0 0 15px var(--neon-blue), inset 0 0 15px var(--neon-blue);
+            border: 2px solid var(--neon-blue);
+        }
+        .border-glow-purple {
+            box-shadow: 0 0 15px var(--neon-purple), inset 0 0 15px var(--neon-purple);
+            border: 2px solid var(--neon-purple);
+        }
+        .border-glow-green {
+            box-shadow: 0 0 15px var(--neon-green), inset 0 0 15px var(--neon-green);
+            border: 2px solid var(--neon-green);
+        }
+
+        /* Animasi Gegaran Skrin */
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(0px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(2px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(2px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+
+        .shake-effect {
+            animation: shake 0.4s;
+            animation-iteration-count: 1;
+        }
+
+        /* Latar belakang Starfield */
+        #starfield {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Bar skrol tersuai */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.3);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--neon-purple);
+            border-radius: 3px;
+        }
+
+        /* Animasi butang pilihan aktif */
+        .option-btn {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .option-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Lapisan Scanline untuk rupa arkad retro */
+        .scanlines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                rgba(18, 16, 16, 0) 50%, 
+                rgba(0, 0, 0, 0.25) 50%
+            ), linear-gradient(
+                90deg,
+                rgba(255, 0, 0, 0.06),
+                rgba(0, 255, 0, 0.02),
+                rgba(0, 0, 255, 0.06)
+            );
+            background-size: 100% 4px, 6px 100%;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        /* Teks denyutan Powerup */
+        .pulse-text {
+            animation: pulse 1s infinite alternate;
+        }
+        @keyframes pulse {
+            from { text-shadow: 0 0 5px #fff, 0 0 10px var(--neon-purple); opacity: 0.8; }
+            to { text-shadow: 0 0 20px #fff, 0 0 30px var(--neon-purple); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="h-screen w-screen flex flex-col justify-between relative select-none">
+
+    <!-- Lapisan scanline & Latar Belakang Kanvas -->
+    <div class="scanlines"></div>
+    <canvas id="starfield"></canvas>
+
+    <!-- SKRIN LOADING -->
+    <div id="loading-screen" class="absolute inset-0 bg-slate-950 z-50 flex flex-col justify-center items-center p-4">
+        <div class="text-center max-w-md w-full">
+            <h1 class="font-orbitron text-4xl md:text-5xl font-extrabold text-[#00f0ff] glow-blue mb-2 tracking-wider">
+                ALIEN
+            </h1>
+            <h2 class="font-arcade text-lg md:text-xl text-[#bd00ff] glow-purple mb-12">
+                VOCAB INVADERS
+            </h2>
+            
+            <div class="w-full bg-slate-900 border border-[#bd00ff] rounded-full h-4 overflow-hidden mb-4 p-0.5">
+                <div id="loading-bar" class="bg-gradient-to-r from-[#bd00ff] to-[#00f0ff] h-full w-0 rounded-full transition-all duration-300 ease-out" style="box-shadow: 0 0 10px #00f0ff"></div>
+            </div>
+            
+            <p id="loading-text" class="text-slate-400 font-orbitron text-sm tracking-widest animate-pulse">MEMUAT SISTEM PERTAHANAN...</p>
+        </div>
+    </div>
+
+    <!-- SKRIN MENU UTAMA -->
+    <div id="menu-screen" class="absolute inset-0 z-40 flex flex-col justify-between items-center py-8 px-4 bg-gradient-to-b from-[#03001e]/80 via-[#12002f]/90 to-black/95 hidden">
+        <div class="text-center mt-2">
+            <div class="inline-block bg-purple-950/30 border border-purple-500/20 px-3 py-1 rounded-full text-[10px] text-purple-400 font-orbitron tracking-widest mb-3">
+                🚀 GALACTIC LINGUISTIC DIVISION
+            </div>
+            <h1 class="font-orbitron text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-[#00f0ff] via-[#bd00ff] to-[#ff007f] glow-blue leading-tight uppercase tracking-wider">
+                ALIEN
+            </h1>
+            <h2 class="font-arcade text-base md:text-xl text-[#39ff14] glow-green mt-1 tracking-widest">
+                VOCAB INVADERS
+            </h2>
+            <p class="text-slate-400 max-w-md mt-4 mx-auto text-xs md:text-sm leading-relaxed px-4">
+                Hancurkan armada alien penginvasi galaksi dengan menebak arti kosakata Bahasa Inggris dengan tepat! Gunakan senjata laser dan taktik terbaik Anda.
+            </p>
+        </div>
+
+        <!-- Papan Skor Tinggi & Info -->
+        <div class="w-full max-w-sm bg-slate-900/80 border-glow-blue rounded-xl p-4 backdrop-blur-md text-center my-3">
+            <div class="text-[10px] font-arcade text-slate-400 uppercase mb-2">Sistem Rekor Galaksi</div>
+            <div class="flex justify-around items-center">
+                <div>
+                    <div class="text-slate-500 text-[10px] font-orbitron tracking-wider">SKOR TERTINGGI</div>
+                    <div id="menu-highscore" class="text-xl font-orbitron font-bold text-[#ff007f] glow-purple">0000</div>
+                </div>
+                <div class="h-6 w-px bg-slate-800"></div>
+                <div>
+                    <div class="text-slate-500 text-[10px] font-orbitron tracking-wider">KOSAKATA</div>
+                    <div id="vocab-count" class="text-xl font-orbitron font-bold text-[#00f0ff] glow-blue">150+</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Nama Pemain -->
+        <div class="w-full max-w-xs mb-3">
+            <div class="text-[9px] font-arcade text-slate-400 text-center uppercase mb-1.5">Identitas Kapten</div>
+            <input type="text" id="player-name-input" maxlength="12" placeholder="NAMA KAPTEN" class="w-full py-2 px-3 bg-slate-900/90 border border-purple-500/30 rounded-lg text-center font-orbitron font-bold text-xs text-[#00f0ff] focus:outline-none focus:border-[#00f0ff] tracking-widest uppercase placeholder-slate-700">
+        </div>
+
+        <!-- Pilihan Tahap Kesukaran (Difficulty) -->
+        <div class="w-full max-w-xs mb-3">
+            <div class="text-[9px] font-arcade text-slate-400 text-center uppercase mb-1.5">Tingkat Kesulitan</div>
+            <div class="grid grid-cols-2 gap-1 bg-slate-950/80 p-1 rounded-lg border border-purple-500/20">
+                <button id="diff-easy" class="py-1.5 text-[10px] font-orbitron font-bold rounded-md transition-all border border-green-500/50 text-[#39ff14] bg-green-950/40 shadow-[0_0_10px_rgba(57,255,20,0.3)]">MUDAH</button>
+                <button id="diff-medium" class="py-1.5 text-[10px] font-orbitron font-bold rounded-md transition-all border border-transparent text-slate-400 hover:text-white">SEDANG</button>
+            </div>
+        </div>
+
+        <!-- Butang Menu Utama -->
+        <div class="w-full max-w-xs flex flex-col gap-3">
+            <button id="btn-start" class="w-full py-3 bg-gradient-to-r from-[#00f0ff] to-[#bd00ff] hover:from-[#bd00ff] hover:to-[#ff007f] text-black font-arcade text-xs rounded-xl font-bold border-glow-blue transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg flex justify-center items-center gap-2">
+                <i data-lucide="play" class="w-4 h-4 fill-current"></i> MULAI PERMAINAN
+            </button>
+            <div class="flex gap-2">
+                <button id="btn-sound-toggle-menu" class="flex-1 py-2.5 bg-slate-900/90 hover:bg-slate-800 border border-purple-500/30 hover:border-purple-500/60 rounded-xl transition-all flex justify-center items-center gap-1.5 text-[10px] font-orbitron font-bold tracking-wider">
+                    <i data-lucide="volume-2" class="w-3.5 h-3.5 text-purple-400"></i> SUARA: ON
+                </button>
+                <button id="btn-tutorial" class="flex-1 py-2.5 bg-slate-900/90 hover:bg-slate-800 border border-purple-500/30 hover:border-purple-500/60 rounded-xl transition-all flex justify-center items-center gap-1.5 text-[10px] font-orbitron font-bold tracking-wider">
+                    <i data-lucide="help-circle" class="w-3.5 h-3.5 text-purple-400"></i> TUTORIAL
+                </button>
+            </div>
+        </div>
+
+        <div class="text-slate-600 text-[9px] font-arcade mt-4">
+            KAMASA TEAM.
+        </div>
+    </div>
+
+    <!-- SKRIN TUTORIAL -->
+    <div id="tutorial-screen" class="absolute inset-0 z-50 flex justify-center items-center p-4 bg-black/95 hidden">
+        <div class="bg-slate-900 border-glow-purple rounded-2xl max-w-md w-full p-5 text-slate-300">
+            <h3 class="font-orbitron text-xl font-bold text-center text-[#bd00ff] glow-purple mb-3">LOG AKTIVITAS PERTAHANAN</h3>
+            
+            <div class="space-y-3.5 text-xs max-h-[55vh] overflow-y-auto pr-2">
+                <div class="border-b border-purple-900/50 pb-2">
+                    <span class="text-[#39ff14] font-bold">1. MEKANISME UTAMA:</span>
+                    <p class="text-[11px] text-slate-400 mt-0.5">Alien akan terus berjatuhan dengan membawa kata Bahasa Inggris di kepalanya. Pilih satu dari empat tombol arti di bawah yang mewakili artinya untuk menembakkan laser plasma pelindung bumi.</p>
+                </div>
+                <div class="border-b border-purple-900/50 pb-2">
+                    <span class="text-[#39ff14] font-bold">2. NYAWA & GRAVITASI:</span>
+                    <p class="text-[11px] text-slate-400 mt-0.5">Anda memiliki 3 nyawa. Jika alien berhasil mendarat di bumi, kota hancur, layar bergetar hebat, dan Anda akan kehilangan 1 nyawa. Memilih jawaban yang salah membuat alien turun lebih cepat!</p>
+                </div>
+                <div class="border-b border-purple-900/50 pb-2">
+                    <span class="text-[#39ff14] font-bold">3. ENERGI KHUSUS (POWER-UP):</span>
+                    <p class="text-[11px] text-slate-400 mt-0.5">Tembak alien yang memancarkan energi khusus untuk memicu salah satu dari tiga efek pertahanan:</p>
+                    <div class="grid grid-cols-3 gap-1.5 mt-1.5 text-[9px] font-orbitron font-bold text-center">
+                        <div class="bg-blue-950/80 border border-blue-500 rounded p-1 text-blue-400">
+                            ❄️ FREEZE TIME<br><span class="text-slate-400 font-normal">Membekukan alien</span>
+                        </div>
+                        <div class="bg-yellow-950/80 border border-yellow-500 rounded p-1 text-yellow-400">
+                            ⚡ DOUBLE SCORE<br><span class="text-slate-400 font-normal">Multiplisitas 2x</span>
+                        </div>
+                        <div class="bg-red-950/80 border border-red-500 rounded p-1 text-red-400">
+                            💥 GIGA BOMB<br><span class="text-slate-400 font-normal">Ratakan layar</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="pb-1">
+                    <span class="text-[#39ff14] font-bold">4. SISTEM KOMBO:</span>
+                    <p class="text-[11px] text-slate-400 mt-0.5">Berhasil menjawab benar secara beruntun akan menghasilkan pengganda kombo. Raih kombo setinggi mungkin untuk mendominasi papan skor!</p>
+                </div>
+            </div>
+
+            <button id="btn-close-tutorial" class="w-full mt-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-orbitron font-bold rounded-xl text-sm transition-all">
+                SAYA MENGERTI, KEMBALI
+            </button>
+        </div>
+    </div>
+
+    <!-- GAMEPLAY HUD (TOP) - Skala dikecilkan -->
+    <header class="w-full p-2 flex justify-between items-center z-30 bg-gradient-to-b from-[#03001e]/90 to-transparent pointer-events-none">
+        <div class="flex items-center gap-2 pointer-events-auto">
+            <button id="btn-pause" class="w-8 h-8 bg-slate-900/80 border border-slate-700 hover:border-[#00f0ff] rounded-lg flex items-center justify-center transition-all text-slate-400 hover:text-[#00f0ff]">
+                <i data-lucide="pause" id="pause-icon" class="w-4 h-4"></i>
+            </button>
+            <button id="btn-sound-hud" class="w-8 h-8 bg-slate-900/80 border border-slate-700 hover:border-purple-500 rounded-lg flex items-center justify-center transition-all text-slate-400 hover:text-purple-400">
+                <i data-lucide="volume-2" id="sound-icon-hud" class="w-4 h-4"></i>
+            </button>
+        </div>
+
+        <!-- HUD stats - Diperkecil -->
+        <div class="flex items-center gap-2 md:gap-4 bg-slate-900/80 border border-purple-500/30 rounded-xl px-3 py-1 backdrop-blur-sm pointer-events-auto">
+            <!-- Player Name -->
+            <div class="text-center min-w-[50px]">
+                <span class="text-[7px] text-slate-500 font-arcade uppercase block">KAPTEN</span>
+                <div id="hud-player-name" class="font-orbitron text-[10px] font-bold text-[#39ff14] glow-green leading-none truncate max-w-[70px]">KAPTEN</div>
+            </div>
+
+            <div class="h-5 w-px bg-slate-800"></div>
+
+            <!-- Score & Combo -->
+            <div class="text-center">
+                <span class="text-[7px] text-slate-500 font-arcade uppercase block">Skor</span>
+                <div id="hud-score" class="font-orbitron text-sm md:text-base font-bold text-[#00f0ff] glow-blue leading-none">00000</div>
+                <div id="hud-combo" class="text-[7px] font-arcade text-yellow-400 animate-pulse hidden">COMBO x2</div>
+            </div>
+
+            <div class="h-5 w-px bg-slate-800"></div>
+
+            <!-- Level progress / Timer -->
+            <div class="text-center min-w-[60px]">
+                <span id="level-title" class="text-[7px] text-slate-500 font-arcade uppercase block">LEVEL 1</span>
+                <!-- Bar progres level -->
+                <div class="w-full bg-slate-800 rounded-full h-1 mt-1 overflow-hidden p-px">
+                    <div id="hud-level-progress" class="bg-[#bd00ff] h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div class="h-5 w-px bg-slate-800"></div>
+
+            <!-- Hearts (Lives) -->
+            <div class="text-center">
+                <span class="text-[7px] text-slate-500 font-arcade uppercase block mb-0.5">NYAWA</span>
+                <div id="hud-lives" class="flex gap-0.5 text-red-500">
+                    <i data-lucide="heart" class="w-3 h-3 fill-current"></i>
+                    <i data-lucide="heart" class="w-3 h-3 fill-current"></i>
+                    <i data-lucide="heart" class="w-3 h-3 fill-current"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ZON PERMAINAN UTAMA -->
+    <main class="flex-grow w-full relative overflow-hidden flex flex-col items-center justify-end z-20">
+        <!-- Notifikasi Powerup aktif -->
+        <div id="active-powerup-bar" class="absolute top-1 left-1/2 -translate-x-1/2 flex gap-2 z-30 pointer-events-none">
+            <!-- Freeze Alert -->
+            <div id="pow-freeze-alert" class="hidden flex items-center gap-1 bg-blue-950/90 border border-blue-400 px-2.5 py-0.5 rounded-full text-[9px] font-orbitron font-bold text-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.5)]">
+                <span class="animate-ping w-1.5 h-1.5 rounded-full bg-blue-400 inline-block mr-1"></span>
+                ❄️ FREEZE: <span id="pow-freeze-timer">5s</span>
+            </div>
+            <!-- Double Score Alert -->
+            <div id="pow-double-alert" class="hidden flex items-center gap-1 bg-yellow-950/90 border border-yellow-400 px-2.5 py-0.5 rounded-full text-[9px] font-orbitron font-bold text-yellow-400 shadow-[0_0_10px_rgba(234,179,8,0.5)]">
+                <span class="animate-ping w-1.5 h-1.5 rounded-full bg-yellow-400 inline-block mr-1"></span>
+                ⚡ DOUBLE: <span id="pow-double-timer">10s</span>
+            </div>
+        </div>
+
+        <!-- Banner Transisi Naik Tahap -->
+        <div id="level-up-banner" class="absolute inset-0 flex flex-col justify-center items-center z-30 pointer-events-none transition-all duration-500 scale-75 opacity-0">
+            <h2 id="banner-title" class="font-arcade text-2xl md:text-4xl text-[#ff007f] glow-purple text-center">LEVEL UP!</h2>
+            <p id="banner-subtitle" class="font-orbitron text-sm text-slate-400 tracking-widest mt-1.5 uppercase">ARMADA BARU MENDEKAT</p>
+        </div>
+
+        <!-- Kanvas Animasi Tembakan Laser & Letupan -->
+        <canvas id="game-canvas" class="absolute inset-0 w-full h-full pointer-events-none"></canvas>
+
+        <!-- Bekas untuk melahirkan Alien secara dinamik -->
+        <div id="alien-container" class="absolute inset-0 w-full h-full overflow-hidden"></div>
+
+        <!-- Garis pertahanan Bumi -->
+        <div id="earth-defense-line" class="absolute bottom-0 left-0 w-full h-1.5 bg-gradient-to-r from-red-500 via-purple-600 to-blue-500 opacity-60 pointer-events-none shadow-[0_-5px_15px_rgba(239,68,68,0.5)]"></div>
+    </main>
+
+    <!-- PANEL KAWALAN & JAWAPAN (BAWAH) - Skala diperkecilkan secara kemas -->
+    <footer class="w-full p-1.5 md:p-2 bg-slate-950/95 border-t border-purple-500/20 z-30 flex flex-col items-center gap-2 backdrop-blur-md">
+        <!-- Panel sasaran perkataan -->
+        <div class="w-full max-w-lg bg-slate-900 border border-slate-700/80 rounded-lg px-2.5 py-1 flex justify-between items-center shadow-inner">
+            <div class="flex items-center gap-1.5">
+                <span class="text-[7px] font-arcade text-slate-500 uppercase tracking-wider block">TARGET ALIEN:</span>
+                <span id="active-target-hint" class="text-sm font-orbitron text-[#39ff14] glow-green font-bold">SILAKAN TEMBAK!</span>
+            </div>
+            <div class="text-[10px] font-orbitron text-slate-400 flex items-center gap-1">
+                <i data-lucide="target" class="w-3 h-3 text-red-500"></i>
+                PILIH JAWABAN YANG COCOK:
+            </div>
+        </div>
+
+        <!-- Grid Butang Opsi Jawapan - Diperkecilkan ketinggiannya -->
+        <div class="w-full max-w-lg grid grid-cols-2 gap-1.5">
+            <button class="option-btn py-1 px-2 bg-slate-900/90 hover:bg-slate-800 border-glow-purple hover:border-glow-blue rounded-xl text-center transition-all flex flex-col items-center justify-center gap-0.5 min-h-[42px]" data-option="0">
+                <span class="text-slate-500 text-[7px] font-arcade">PILIHAN A</span>
+                <span class="option-text text-[11px] font-orbitron font-bold tracking-wider text-slate-100">-</span>
+            </button>
+            <button class="option-btn py-1 px-2 bg-slate-900/90 hover:bg-slate-800 border-glow-purple hover:border-glow-blue rounded-xl text-center transition-all flex flex-col items-center justify-center gap-0.5 min-h-[42px]" data-option="1">
+                <span class="text-slate-500 text-[7px] font-arcade">PILIHAN B</span>
+                <span class="option-text text-[11px] font-orbitron font-bold tracking-wider text-slate-100">-</span>
+            </button>
+            <button class="option-btn py-1 px-2 bg-slate-900/90 hover:bg-slate-800 border-glow-purple hover:border-glow-blue rounded-xl text-center transition-all flex flex-col items-center justify-center gap-0.5 min-h-[42px]" data-option="2">
+                <span class="text-slate-500 text-[7px] font-arcade">PILIHAN C</span>
+                <span class="option-text text-[11px] font-orbitron font-bold tracking-wider text-slate-100">-</span>
+            </button>
+            <button class="option-btn py-1 px-2 bg-slate-900/90 hover:bg-slate-800 border-glow-purple hover:border-glow-blue rounded-xl text-center transition-all flex flex-col items-center justify-center gap-0.5 min-h-[42px]" data-option="3">
+                <span class="text-slate-500 text-[7px] font-arcade">PILIHAN D</span>
+                <span class="option-text text-[11px] font-orbitron font-bold tracking-wider text-slate-100">-</span>
+            </button>
+        </div>
+    </footer>
+
+    <!-- SKRIN JEDA (PAUSE) -->
+    <div id="pause-screen" class="absolute inset-0 z-40 bg-black/80 flex flex-col justify-center items-center p-4 hidden">
+        <div class="bg-slate-900 border-glow-blue p-6 rounded-2xl max-w-sm w-full text-center">
+            <h3 class="font-arcade text-xl text-[#00f0ff] glow-blue mb-1">GAME PAUSED</h3>
+            <p class="font-orbitron text-xs text-slate-400 mb-6 tracking-wider">PERTAHANAN SEDANG DITANGGUHKAN</p>
+
+            <div class="space-y-3">
+                <button id="btn-resume" class="w-full py-2.5 bg-gradient-to-r from-[#00f0ff] to-cyan-500 text-black text-sm font-orbitron font-bold rounded-xl hover:from-[#39ff14] hover:to-emerald-500 transition-all">
+                    LANJUTKAN PERTEMPURAN
+                </button>
+                <button id="btn-restart-pause" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-white text-sm font-orbitron font-bold rounded-xl transition-all">
+                    MULAI ULANG GAME
+                </button>
+                <button id="btn-menu-pause" class="w-full py-2.5 bg-slate-950 hover:bg-slate-900 border border-purple-500/20 text-slate-400 text-sm font-orbitron font-bold rounded-xl transition-all">
+                    KEMBALI KE MENU UTAMA
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SKRIN PERMAINAN TAMAT (GAME OVER) -->
+    <div id="gameover-screen" class="absolute inset-0 z-40 bg-black/95 flex flex-col justify-center items-center p-4 hidden">
+        <div class="bg-gradient-to-b from-slate-900 to-black border-glow-purple p-6 rounded-2xl max-w-md w-full text-center">
+            <div class="w-12 h-12 bg-red-950/50 border border-red-500 rounded-full flex items-center justify-center mx-auto mb-3 animate-bounce">
+                <i data-lucide="shield-alert" class="w-6 h-6 text-red-500"></i>
+            </div>
+            
+            <h1 class="font-arcade text-xl md:text-2xl text-[#ff007f] glow-purple mb-1">CITY DESTROYED</h1>
+            <h2 id="go-player-title" class="font-orbitron text-[10px] text-red-400 tracking-widest uppercase mb-4">Sistem Pertahanan Bumi Runtuh!</h2>
+
+            <!-- Perincian Markah Akhir -->
+            <div class="bg-slate-950/90 border border-purple-500/20 rounded-xl p-4 mb-5">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <div class="text-slate-500 text-[10px] font-orbitron">SKOR AKHIR</div>
+                        <div id="go-score" class="text-2xl font-orbitron font-black text-[#00f0ff] glow-blue">00000</div>
+                    </div>
+                    <div>
+                        <div class="text-slate-500 text-[10px] font-orbitron">SKOR TERTINGGI</div>
+                        <div id="go-highscore" class="text-2xl font-orbitron font-black text-yellow-400">00000</div>
+                    </div>
+                </div>
+                
+                <div class="h-px bg-slate-800 my-3"></div>
+
+                <div class="grid grid-cols-3 gap-1.5 text-center text-[10px]">
+                    <div>
+                        <div class="text-slate-500">LEVEL</div>
+                        <div id="go-level" class="font-bold text-[#bd00ff] font-orbitron text-xs">Level 1</div>
+                    </div>
+                    <div>
+                        <div class="text-slate-500">TEMBAKAN</div>
+                        <div id="go-total-shot" class="font-bold text-slate-200 font-orbitron text-xs">0</div>
+                    </div>
+                    <div>
+                        <div class="text-slate-500">AKURASI</div>
+                        <div id="go-accuracy" class="font-bold text-[#39ff14] font-orbitron text-xs">0%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Butang Tindakan -->
+            <div class="space-y-2.5">
+                <button id="btn-restart-gameover" class="w-full py-3 bg-gradient-to-r from-[#00f0ff] to-[#bd00ff] text-black font-arcade text-[10px] rounded-xl font-bold transition-all transform hover:scale-105 active:scale-95 shadow-lg flex justify-center items-center gap-2">
+                    <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> MAIN LAGI
+                </button>
+                <button id="btn-menu-gameover" class="w-full py-2.5 bg-slate-900 border border-purple-500/30 text-slate-300 text-xs font-orbitron font-bold rounded-xl transition-all">
+                    KEMBALI KE MENU UTAMA
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOGIK & KOD JAVASCRIPT UNTUK ALIEN VOCABULARY INVADERS -->
+    <script>
+        // PANGKAL DATA PERKATAAN BAHASA INGGRIS - BAHASA INDONESIA/MELAYU
+        // Dibahagikan kepada 3 tahap kesukaran dengan variasi yang kaya
+        const vocabDatabase = {
+            easy: [
+                { en: "Apple", id: "Apel" },
+                { en: "Book", id: "Buku" },
+                { en: "Cat", id: "Kucing" },
+                { en: "Dog", id: "Anjing" },
+                { en: "Water", id: "Air" },
+                { en: "House", id: "Rumah" },
+                { en: "Car", id: "Mobil" },
+                { en: "Sun", id: "Matahari" },
+                { en: "Moon", id: "Bulan" },
+                { en: "Tree", id: "Pohon" },
+                { en: "School", id: "Sekolah" },
+                { en: "Paper", id: "Kertas" },
+                { en: "Table", id: "Meja" },
+                { en: "Chair", id: "Kursi" },
+                { en: "Bird", id: "Burung" },
+                { en: "Fish", id: "Ikan" },
+                { en: "Door", id: "Pintu" },
+                { en: "Hand", id: "Tangan" },
+                { en: "Baby", id: "Bayi" },
+                { en: "Friend", id: "Teman" },
+                { en: "Milk", id: "Susu" },
+                { en: "Road", id: "Jalan" },
+                { en: "River", id: "Sungai" },
+                { en: "Star", id: "Bintang" },
+                { en: "Time", id: "Waktu" },
+                { en: "Pen", id: "Pena" },
+                { en: "Clock", id: "Jam" },
+                { en: "Shoe", id: "Sepatu" },
+                { en: "Ball", id: "Bola" },
+                { en: "Rain", id: "Hujan" },
+                { en: "Wind", id: "Angin" },
+                { en: "Fire", id: "Api" },
+                { en: "Ice", id: "Es" },
+                { en: "Key", id: "Kunci" },
+                { en: "Box", id: "Kotak" },
+                { en: "Sky", id: "Langit" },
+                { en: "Sea", id: "Laut" },
+                { en: "Flower", id: "Bunga" },
+                { en: "Leaf", id: "Daun" },
+                { en: "Bread", id: "Roti" },
+                { en: "Cake", id: "Kue" },
+                { en: "King", id: "Raja" },
+                { en: "Queen", id: "Ratu" },
+                { en: "Gold", id: "Emas" },
+                { en: "Song", id: "Lagu" },
+                { en: "Boy", id: "Anak Laki-laki" },
+                { en: "Girl", id: "Anak Perempuan" },
+                { en: "Cap", id: "Topi" },
+                { en: "Bag", id: "Tas" }
+            ],
+            medium: [
+                { en: "Adventure", id: "Petualangan" },
+                { en: "Beautiful", id: "Indah" },
+                { en: "Challenge", id: "Tantangan" },
+                { en: "Danger", id: "Bahaya" },
+                { en: "Experience", id: "Pengalaman" },
+                { en: "Future", id: "Masa Depan" },
+                { en: "History", id: "Sejarah" },
+                { en: "Journey", id: "Perjalanan" },
+                { en: "Knowledge", id: "Pengetahuan" },
+                { en: "Language", id: "Bahasa" },
+                { en: "Mountain", id: "Gunung" },
+                { en: "Nature", id: "Alam" },
+                { en: "Opportunity", id: "Kesempatan" },
+                { en: "Protect", id: "Melindungi" },
+                { en: "Quiet", id: "Tenang" },
+                { en: "Remember", id: "Mengingat" },
+                { en: "Science", id: "Sains" },
+                { en: "Treasure", id: "Harta Karun" },
+                { en: "Universe", id: "Semesta" },
+                { en: "Victory", id: "Kemenangan" },
+                { en: "Weapon", id: "Senjata" },
+                { en: "Believe", id: "Percaya" },
+                { en: "Create", id: "Menciptakan" },
+                { en: "Discover", id: "Menemukan" },
+                { en: "Energy", id: "Energi" },
+                { en: "Champion", id: "Juara" },
+                { en: "Dream", id: "Mimpi" },
+                { en: "Explore", id: "Jelajah" },
+                { en: "Freedom", id: "Kebebasan" },
+                { en: "Garden", id: "Kebun" },
+                { en: "Harvest", id: "Panen" },
+                { en: "Honest", id: "Jujur" },
+                { en: "Imagine", id: "Membayangkan" },
+                { en: "Island", id: "Pulau" },
+                { en: "Legend", id: "Legenda" },
+                { en: "Memory", id: "Ingatan" },
+                { en: "Miracle", id: "Keajaiban" },
+                { en: "Ocean", id: "Samudra" },
+                { en: "Patient", id: "Sabar" },
+                { en: "Promise", id: "Janji" },
+                { en: "Shadow", id: "Bayangan" },
+                { en: "Silent", id: "Sunyi" },
+                { en: "Talent", id: "Bakat" },
+                { en: "Wisdom", id: "Kebijaksanaan" },
+                { en: "Wonder", id: "Keajaiban" },
+                { en: "Brave", id: "Berani" },
+                { en: "Clever", id: "Pintar" },
+                { en: "Healthy", id: "Sehat" },
+                { en: "Perfect", id: "Sempurna" }
+            ],
+            hard: [
+                { en: "Annihilate", id: "Membinasakan" },
+                { en: "Benevolent", id: "Murah Hati" },
+                { en: "Consequence", id: "Konsekuensi" },
+                { en: "Devastating", id: "Merusak" },
+                { en: "Ephemeral", id: "Fana" },
+                { en: "Fluctuate", id: "Berfluktuasi" },
+                { en: "Gargantuan", id: "Sangat Besar" },
+                { en: "Hazardous", id: "Berbahaya" },
+                { en: "Inevitable", id: "Tak Terhindarkan" },
+                { en: "Juxtapose", id: "Menyejajarkan" },
+                { en: "Labyrinth", id: "Labirin" },
+                { en: "Magnificent", id: "Megah" },
+                { en: "Nostalgia", id: "Kerinduan" },
+                { en: "Obsolete", id: "Usang" },
+                { en: "Paradox", id: "Paradoks" },
+                { en: "Quarantine", id: "Karantina" },
+                { en: "Resilience", id: "Ketabahan" },
+                { en: "Simultaneous", id: "Serempak" },
+                { en: "Transparent", id: "Transparan" },
+                { en: "Ubiquitous", id: "Ada Di Mana-Mana" },
+                { en: "Vulnerable", id: "Rentan" },
+                { en: "Withstand", id: "Menahan" },
+                { en: "Zenith", id: "Puncak" },
+                { en: "Prosperity", id: "Kemakmuran" },
+                { en: "Ambiguity", id: "Ambigu" },
+                { en: "Altruistic", id: "Peduli Sesama" },
+                { en: "Cognitive", id: "Kognitif" },
+                { en: "Dexterity", id: "Ketangkasan" },
+                { en: "Eloquent", id: "Fasih" },
+                { en: "Formidable", id: "Tangguh" },
+                { en: "Hypothesize", id: "Berhipotesis" },
+                { en: "Ingenious", id: "Cerdik" },
+                { en: "Metamorphosis", id: "Metamorfosis" },
+                { en: "Nebulous", id: "Samar" },
+                { en: "Oscillate", id: "Berosilasi" },
+                { en: "Perplexing", id: "Membingungkan" },
+                { en: "Reciprocal", id: "Timbal Balik" },
+                { en: "Scrutinize", id: "Meneliti" },
+                { en: "Unprecedented", id: "Belum Pernah Ada" },
+                { en: "Versatile", id: "Serbaguna" },
+                { en: "Diligent", id: "Rajin" },
+                { en: "Enthusiastic", id: "Antusias" },
+                { en: "Generous", id: "Dermawan" },
+                { en: "Optimistic", id: "Optimis" }
+            ]
+        };
+
+        // ENJIN AUDIO (Sintesis menggunakan Web Audio API tulen)
+        const AudioEngine = {
+            ctx: null,
+            enabled: true,
+
+            init() {
+                try {
+                    window.AudioContext = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioContext();
+                } catch (e) {
+                    console.error("Gagal memulai Web Audio API", e);
+                }
+            },
+
+            playGameStart() {
+                if (!this.enabled || !this.ctx) return;
+                this.resumeCtx();
+
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const osc2 = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = "sawtooth";
+                osc.frequency.setValueAtTime(150, now);
+                osc.frequency.exponentialRampToValueAtTime(600, now + 0.15);
+                osc.frequency.exponentialRampToValueAtTime(300, now + 0.16);
+                osc.frequency.exponentialRampToValueAtTime(1200, now + 0.5);
+
+                osc2.type = "sine";
+                osc2.frequency.setValueAtTime(300, now);
+                osc2.frequency.exponentialRampToValueAtTime(1200, now + 0.15);
+                osc2.frequency.exponentialRampToValueAtTime(600, now + 0.16);
+                osc2.frequency.exponentialRampToValueAtTime(2400, now + 0.5);
+
+                gain.gain.setValueAtTime(0.25, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+
+                osc.connect(gain);
+                osc2.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                osc.start();
+                osc2.start();
+                osc.stop(now + 0.6);
+                osc2.stop(now + 0.6);
+            },
+
+            playLaser() {
+                if (!this.enabled || !this.ctx) return;
+                this.resumeCtx();
+                
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                
+                osc.type = "sawtooth";
+                osc.frequency.setValueAtTime(800, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(80, this.ctx.currentTime + 0.3);
+                
+                gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
+                
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.3);
+            },
+
+            playExplosion() {
+                if (!this.enabled || !this.ctx) return;
+                this.resumeCtx();
+                
+                const bufferSize = this.ctx.sampleRate * 0.4;
+                const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
+                
+                const noise = this.ctx.createBufferSource();
+                noise.buffer = buffer;
+                
+                const filter = this.ctx.createBiquadFilter();
+                filter.type = "lowpass";
+                filter.frequency.setValueAtTime(400, this.ctx.currentTime);
+                filter.frequency.exponentialRampToValueAtTime(10, this.ctx.currentTime + 0.4);
+                
+                const gain = this.ctx.createGain();
+                gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.4);
+                
+                noise.connect(filter);
+                filter.connect(gain);
+                gain.connect(this.ctx.destination);
+                
+                noise.start();
+                noise.stop(this.ctx.currentTime + 0.4);
+            },
+
+            playPowerup() {
+                if (!this.enabled || !this.ctx) return;
+                this.resumeCtx();
+
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const osc2 = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = "triangle";
+                osc.frequency.setValueAtTime(200, now);
+                osc.frequency.exponentialRampToValueAtTime(1200, now + 0.5);
+
+                osc2.type = "sine";
+                osc2.frequency.setValueAtTime(250, now);
+                osc2.frequency.exponentialRampToValueAtTime(1500, now + 0.5);
+
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+
+                osc.connect(gain);
+                osc2.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                osc.start();
+                osc2.start();
+                osc.stop(now + 0.5);
+                osc2.stop(now + 0.5);
+            },
+
+            playError() {
+                if (!this.enabled || !this.ctx) return;
+                this.resumeCtx();
+
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = "square";
+                osc.frequency.setValueAtTime(180, this.ctx.currentTime);
+                osc.frequency.setValueAtTime(120, this.ctx.currentTime + 0.1);
+
+                gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.3);
+            },
+
+            playGameover() {
+                if (!this.enabled || !this.ctx) return;
+                this.resumeCtx();
+
+                const now = this.ctx.currentTime;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+
+                osc.type = "sawtooth";
+                osc.frequency.setValueAtTime(300, now);
+                osc.frequency.linearRampToValueAtTime(150, now + 0.3);
+                osc.frequency.linearRampToValueAtTime(70, now + 0.8);
+
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.linearRampToValueAtTime(0.1, now + 0.5);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
+
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+
+                osc.start();
+                osc.stop(now + 1.2);
+            },
+
+            bgmOscillator: null,
+            bgmGain: null,
+            bgmInterval: null,
+            isBgmPlaying: false,
+
+            startBgm() {
+                if (!this.enabled || !this.ctx || this.isBgmPlaying) return;
+                this.resumeCtx();
+                
+                this.isBgmPlaying = true;
+                const notes = [130.81, 146.83, 164.81, 196.00, 220.00, 261.63, 293.66, 329.63];
+                
+                let step = 0;
+                this.bgmInterval = setInterval(() => {
+                    if (!this.isBgmPlaying || !this.enabled) return;
+                    
+                    try {
+                        const note = notes[Math.floor(Math.random() * notes.length)] * (Math.random() > 0.6 ? 2 : 1);
+                        const osc = this.ctx.createOscillator();
+                        const gain = this.ctx.createGain();
+                        
+                        osc.type = "sine";
+                        osc.frequency.setValueAtTime(note, this.ctx.currentTime);
+                        
+                        gain.gain.setValueAtTime(0.04, this.ctx.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 1.8);
+                        
+                        osc.connect(gain);
+                        gain.connect(this.ctx.destination);
+                        
+                        osc.start();
+                        osc.stop(this.ctx.currentTime + 1.8);
+                    } catch(e) {}
+                }, 900);
+            },
+
+            stopBgm() {
+                this.isBgmPlaying = false;
+                if (this.bgmInterval) {
+                    clearInterval(this.bgmInterval);
+                    this.bgmInterval = null;
+                }
+            },
+
+            resumeCtx() {
+                if (this.ctx && this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }
+        };
+
+        // PENGURUSAN STATUS PERMAINAN
+        const Game = {
+            score: 0,
+            highscore: 0,
+            combo: 0,
+            lives: 3,
+            level: 1,
+            difficulty: 'easy',
+            playerName: 'KAPTEN',
+            levelDuration: 45000,
+            levelTimeElapsed: 0,
+            levelTimerInterval: null,
+            spawnTimer: null,
+            isPaused: false,
+            isPlaying: false,
+            aliens: [],
+            lastSpawnTime: 0,
+            spawnInterval: 4000,
+            baseSpeed: 0.5,
+            activeTarget: null,
+            usedVocabHistory: [],
+            
+            totalShots: 0,
+            correctShots: 0,
+
+            powerups: {
+                freeze: { active: false, timer: 0, duration: 6000 },
+                doubleScore: { active: false, timer: 0, duration: 10000 }
+            },
+
+            init() {
+                this.highscore = parseInt(localStorage.getItem('vocab_invaders_highscore')) || 0;
+                document.getElementById('menu-highscore').innerText = this.highscore.toString().padStart(4, '0');
+                
+                AudioEngine.init();
+                this.bindEvents();
+                initStarfield();
+                this.simulateLoading();
+            },
+
+            simulateLoading() {
+                const bar = document.getElementById('loading-bar');
+                const text = document.getElementById('loading-text');
+                const screens = [
+                    "SINKRONISASI DATABANK KATA...",
+                    "MENGKALIBRASI MERIAM PLASMA...",
+                    "MEMPERKUAT BARRIER ION BUMI...",
+                    "SISTEM SIAP BERTEMPUR!"
+                ];
+                let progress = 0;
+                
+                const interval = setInterval(() => {
+                    progress += Math.floor(Math.random() * 15) + 5;
+                    if (progress > 100) progress = 100;
+                    
+                    bar.style.width = progress + '%';
+                    
+                    if (progress < 30) text.innerText = screens[0];
+                    else if (progress < 60) text.innerText = screens[1];
+                    else if (progress < 85) text.innerText = screens[2];
+                    else text.innerText = screens[3];
+
+                    if (progress === 100) {
+                        clearInterval(interval);
+                        setTimeout(() => {
+                            document.getElementById('loading-screen').classList.add('hidden');
+                            document.getElementById('menu-screen').classList.remove('hidden');
+                            lucide.createIcons();
+                        }, 500);
+                    }
+                }, 150);
+            },
+
+            bindEvents() {
+                document.getElementById('btn-start').addEventListener('click', () => this.startGame());
+                document.getElementById('btn-tutorial').addEventListener('click', () => {
+                    document.getElementById('tutorial-screen').classList.remove('hidden');
+                });
+                document.getElementById('btn-close-tutorial').addEventListener('click', () => {
+                    document.getElementById('tutorial-screen').classList.add('hidden');
+                });
+                
+                const diffBtns = {
+                    easy: document.getElementById('diff-easy'),
+                    medium: document.getElementById('diff-medium')
+                };
+
+                const changeDifficulty = (selectedDiff) => {
+                    this.difficulty = selectedDiff;
+
+                    Object.keys(diffBtns).forEach(key => {
+                        diffBtns[key].className = "py-1.5 text-[10px] font-orbitron font-bold rounded-md transition-all border border-transparent text-slate-400 hover:text-white";
+                    });
+
+                    if (selectedDiff === 'easy') {
+                        diffBtns.easy.className = "py-1.5 text-[10px] font-orbitron font-bold rounded-md transition-all border border-green-500/50 text-[#39ff14] bg-green-950/40 shadow-[0_0_10px_rgba(57,255,20,0.3)]";
+                    } else if (selectedDiff === 'medium') {
+                        diffBtns.medium.className = "py-1.5 text-[10px] font-orbitron font-bold rounded-md transition-all border border-blue-500/50 text-[#00f0ff] bg-blue-950/40 shadow-[0_0_10px_rgba(0,240,255,0.3)]";
+                    }
+
+                    AudioEngine.playPowerup();
+                };
+
+                diffBtns.easy.addEventListener('click', () => changeDifficulty('easy'));
+                diffBtns.medium.addEventListener('click', () => changeDifficulty('medium'));
+                
+                const toggleSound = () => {
+                    AudioEngine.enabled = !AudioEngine.enabled;
+                    const text = AudioEngine.enabled ? "SUARA: ON" : "SUARA: OFF";
+                    document.getElementById('btn-sound-toggle-menu').innerHTML = `<i data-lucide="${AudioEngine.enabled ? 'volume-2' : 'volume-x'}" class="w-4 h-4 text-purple-400"></i> ${text}`;
+                    
+                    const hudIcon = document.getElementById('sound-icon-hud');
+                    if (AudioEngine.enabled) {
+                        hudIcon.setAttribute('data-lucide', 'volume-2');
+                        AudioEngine.startBgm();
+                    } else {
+                        hudIcon.setAttribute('data-lucide', 'volume-x');
+                        AudioEngine.stopBgm();
+                    }
+                    lucide.createIcons();
+                };
+                
+                document.getElementById('btn-sound-toggle-menu').addEventListener('click', toggleSound);
+                document.getElementById('btn-sound-hud').addEventListener('click', toggleSound);
+
+                document.getElementById('btn-pause').addEventListener('click', () => this.togglePause());
+                document.getElementById('btn-resume').addEventListener('click', () => this.togglePause());
+                
+                const restartGame = () => {
+                    this.isPaused = false;
+                    document.getElementById('pause-screen').classList.add('hidden');
+                    document.getElementById('gameover-screen').classList.add('hidden');
+                    this.startGame();
+                };
+                
+                document.getElementById('btn-restart-pause').addEventListener('click', restartGame);
+                document.getElementById('btn-restart-gameover').addEventListener('click', restartGame);
+                
+                const backToMenu = () => {
+                    this.isPaused = false;
+                    this.isPlaying = false;
+                    AudioEngine.stopBgm();
+                    document.getElementById('pause-screen').classList.add('hidden');
+                    document.getElementById('gameover-screen').classList.add('hidden');
+                    document.getElementById('menu-screen').classList.remove('hidden');
+                    this.highscore = parseInt(localStorage.getItem('vocab_invaders_highscore')) || 0;
+                    document.getElementById('menu-highscore').innerText = this.highscore.toString().padStart(4, '0');
+                };
+                
+                document.getElementById('btn-menu-pause').addEventListener('click', backToMenu);
+                document.getElementById('btn-menu-gameover').addEventListener('click', backToMenu);
+
+                const optionBtns = document.querySelectorAll('.option-btn');
+                optionBtns.forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const optionIndex = parseInt(btn.getAttribute('data-option'));
+                        this.handleAnswerSelection(optionIndex);
+                    });
+                });
+
+                window.addEventListener('keydown', (e) => {
+                    if (!this.isPlaying || this.isPaused) return;
+                    if (e.key === '1' || e.key.toLowerCase() === 'a') this.handleAnswerSelection(0);
+                    if (e.key === '2' || e.key.toLowerCase() === 'b') this.handleAnswerSelection(1);
+                    if (e.key === '3' || e.key.toLowerCase() === 'c') this.handleAnswerSelection(2);
+                    if (e.key === '4' || e.key.toLowerCase() === 'd') this.handleAnswerSelection(3);
+                    if (e.key === 'Escape') this.togglePause();
+                });
+            },
+
+            startGame() {
+                this.score = 0;
+                this.combo = 0;
+                this.lives = 3;
+                this.level = 1;
+                this.levelTimeElapsed = 0;
+                this.aliens = [];
+                this.isPaused = false;
+                this.isPlaying = true;
+                this.activeTarget = null;
+                this.totalShots = 0;
+                this.correctShots = 0;
+                this.usedVocabHistory = [];
+
+                const nameInput = document.getElementById('player-name-input').value.trim();
+                this.playerName = nameInput || "KAPTEN";
+                document.getElementById('hud-player-name').innerText = this.playerName.toUpperCase();
+
+                if (this.difficulty === 'easy') {
+                    this.baseSpeed = 0.35;
+                } else if (this.difficulty === 'medium') {
+                    this.baseSpeed = 0.65;
+                }
+
+                this.powerups.freeze.active = false;
+                this.powerups.doubleScore.active = false;
+                document.getElementById('pow-freeze-alert').classList.add('hidden');
+                document.getElementById('pow-double-alert').classList.add('hidden');
+
+                document.getElementById('menu-screen').classList.add('hidden');
+                document.getElementById('gameover-screen').classList.add('hidden');
+                document.getElementById('pause-screen').classList.add('hidden');
+                document.getElementById('hud-score').innerText = "00000";
+                document.getElementById('hud-combo').classList.add('hidden');
+                document.getElementById('level-title').innerText = `LEVEL ${this.level}`;
+                this.updateLivesUI();
+                
+                const container = document.getElementById('alien-container');
+                container.innerHTML = "";
+
+                AudioEngine.init();
+                AudioEngine.playGameStart();
+                AudioEngine.startBgm();
+
+                this.lastSpawnTime = Date.now();
+                this.startTimers();
+
+                startAnimationLoop();
+
+                this.showLevelBanner(1, `PERANG DIMULAI (${this.difficulty.toUpperCase()})`);
+                
+                this.spawnAlien();
+            },
+
+            startTimers() {
+                if (this.levelTimerInterval) clearInterval(this.levelTimerInterval);
+                if (this.spawnTimer) clearInterval(this.spawnTimer);
+
+                this.levelTimerInterval = setInterval(() => {
+                    if (this.isPaused) return;
+                    
+                    this.levelTimeElapsed += 100;
+                    const progressPercent = (this.levelTimeElapsed / this.levelDuration) * 100;
+                    document.getElementById('hud-level-progress').style.width = `${progressPercent}%`;
+
+                    if (this.powerups.freeze.active) {
+                        this.powerups.freeze.timer -= 100;
+                        document.getElementById('pow-freeze-timer').innerText = `${Math.ceil(this.powerups.freeze.timer / 1000)}s`;
+                        if (this.powerups.freeze.timer <= 0) {
+                            this.powerups.freeze.active = false;
+                            document.getElementById('pow-freeze-alert').classList.add('hidden');
+                        }
+                    }
+
+                    if (this.powerups.doubleScore.active) {
+                        this.powerups.doubleScore.timer -= 100;
+                        document.getElementById('pow-double-timer').innerText = `${Math.ceil(this.powerups.doubleScore.timer / 1000)}s`;
+                        if (this.powerups.doubleScore.timer <= 0) {
+                            this.powerups.doubleScore.active = false;
+                            document.getElementById('pow-double-alert').classList.add('hidden');
+                        }
+                    }
+
+                    if (this.levelTimeElapsed >= this.levelDuration) {
+                        this.levelUp();
+                    }
+                }, 100);
+
+                this.adjustSpawnTimer();
+            },
+
+            adjustSpawnTimer() {
+                if (this.spawnTimer) clearInterval(this.spawnTimer);
+
+                let baseSpawnInterval = 4500;
+                if (this.difficulty === 'easy') baseSpawnInterval = 5000;
+                else if (this.difficulty === 'medium') baseSpawnInterval = 3800;
+
+                this.spawnInterval = Math.max(1300, baseSpawnInterval - (this.level * 600));
+
+                this.spawnTimer = setInterval(() => {
+                    if (this.isPaused) return;
+                    this.spawnAlien();
+                }, this.spawnInterval);
+            },
+
+            levelUp() {
+                this.level++;
+                this.levelTimeElapsed = 0;
+                document.getElementById('level-title').innerText = `LEVEL ${this.level}`;
+                
+                this.showLevelBanner(this.level, "ARMADA MUSUH BERTAMBAH KUAT");
+                
+                AudioEngine.playPowerup();
+
+                this.adjustSpawnTimer();
+            },
+
+            showLevelBanner(num, subtitle) {
+                const banner = document.getElementById('level-up-banner');
+                const title = document.getElementById('banner-title');
+                const sub = document.getElementById('banner-subtitle');
+
+                title.innerText = `LEVEL ${num}`;
+                sub.innerText = subtitle;
+
+                banner.classList.remove('opacity-0', 'scale-75');
+                banner.classList.add('opacity-100', 'scale-100');
+
+                setTimeout(() => {
+                    banner.classList.remove('opacity-100', 'scale-100');
+                    banner.classList.add('opacity-0', 'scale-75');
+                }, 2500);
+            },
+
+            spawnAlien() {
+                const vocab = this.getRandomVocab();
+                const container = document.getElementById('alien-container');
+
+                // Saiz dikecilkan sedikit untuk memberi ruang skrin yang lebih luas
+                const margin = 40; 
+                const containerWidth = container.clientWidth || window.innerWidth;
+                const randomX = Math.random() * (containerWidth - 80 - (margin * 2)) + margin;
+
+                const alienType = Math.floor(Math.random() * 3) + 1;
+
+                let powerupType = null;
+                const r = Math.random();
+                if (r < 0.15) {
+                    const powerupsList = ["freeze", "double", "bomb"];
+                    powerupType = powerupsList[Math.floor(Math.random() * powerupsList.length)];
+                }
+
+                const alienEl = document.createElement('div');
+                alienEl.className = "absolute flex flex-col items-center transition-all duration-75 select-none pointer-events-none";
+                alienEl.style.left = `${randomX}px`;
+                alienEl.style.top = `-80px`;
+                alienEl.style.width = "80px"; // Dikecilkan daripada 100px
+                alienEl.id = `alien-${Date.now()}-${Math.floor(Math.random()*1000)}`;
+
+                let alienSVG = "";
+                let glowColor = "rgba(0, 240, 255, 0.7)";
+                let mainColor = "#00f0ff";
+
+                if (powerupType) {
+                    glowColor = "rgba(255, 215, 0, 0.9)";
+                    mainColor = "#ffd700";
+                    alienSVG = `
+                        <svg width="48" height="40" viewBox="0 0 100 100" class="filter drop-shadow-[0_0_8px_rgba(255,215,0,0.8)] animate-bounce">
+                            <ellipse cx="50" cy="55" rx="35" ry="15" fill="#3a2f00" stroke="#ffd700" stroke-width="4"/>
+                            <path d="M 30 55 Q 50 20 70 55" fill="rgba(255,215,0,0.2)" stroke="#ffd700" stroke-width="3" />
+                            <circle cx="50" cy="40" r="10" fill="#ff00ea" class="animate-pulse" />
+                            <line x1="50" y1="20" x2="50" y2="30" stroke="#ffd700" stroke-width="3"/>
+                            <circle cx="50" cy="18" r="4" fill="#39ff14"/>
+                            <text x="50" y="85" font-family="'Orbitron'" font-size="20" font-weight="bold" fill="#39ff14" text-anchor="middle">⚡</text>
+                        </svg>
+                    `;
+                } else if (alienType === 1) {
+                    glowColor = "rgba(189, 0, 255, 0.8)";
+                    mainColor = "#bd00ff";
+                    alienSVG = `
+                        <svg width="44" height="36" viewBox="0 0 100 100" style="filter: drop-shadow(0px 0px 6px ${glowColor})">
+                            <polygon points="50,15 15,60 30,85 70,85 85,60" fill="#1b003a" stroke="${mainColor}" stroke-width="4"/>
+                            <ellipse cx="50" cy="55" rx="20" ry="10" fill="rgba(189, 0, 255, 0.3)" />
+                            <circle cx="40" cy="50" r="4" fill="#00f0ff"/>
+                            <circle cx="60" cy="50" r="4" fill="#00f0ff"/>
+                            <line x1="35" y1="30" x2="25" y2="10" stroke="${mainColor}" stroke-width="3"/>
+                            <line x1="65" y1="30" x2="75" y2="10" stroke="${mainColor}" stroke-width="3"/>
+                        </svg>
+                    `;
+                } else if (alienType === 2) {
+                    glowColor = "rgba(0, 240, 255, 0.8)";
+                    mainColor = "#00f0ff";
+                    alienSVG = `
+                        <svg width="44" height="36" viewBox="0 0 100 100" style="filter: drop-shadow(0px 0px 6px ${glowColor})">
+                            <ellipse cx="50" cy="50" rx="40" ry="22" fill="#002b3d" stroke="${mainColor}" stroke-width="4"/>
+                            <ellipse cx="50" cy="40" rx="20" ry="12" fill="none" stroke="#ff007f" stroke-width="3"/>
+                            <circle cx="35" cy="50" r="5" fill="#39ff14"/>
+                            <circle cx="50" cy="50" r="5" fill="#39ff14"/>
+                            <circle cx="65" cy="50" r="5" fill="#39ff14"/>
+                            <path d="M 25 65 Q 50 78 75 65" stroke="${mainColor}" stroke-width="3" fill="none"/>
+                        </svg>
+                    `;
+                } else {
+                    glowColor = "rgba(57, 255, 20, 0.8)";
+                    mainColor = "#39ff14";
+                    alienSVG = `
+                        <svg width="44" height="36" viewBox="0 0 100 100" style="filter: drop-shadow(0px 0px 6px ${glowColor})">
+                            <path d="M 50 10 L 85 45 L 70 85 L 30 85 L 15 45 Z" fill="#0d2e05" stroke="${mainColor}" stroke-width="4"/>
+                            <rect x="40" y="35" width="20" height="20" rx="4" fill="rgba(57, 255, 20, 0.3)" stroke="#ff007f" stroke-width="2"/>
+                            <circle cx="50" cy="45" r="3" fill="#ffffff" class="animate-pulse" />
+                            <path d="M 35 75 C 45 65, 55 65, 65 75" stroke="${mainColor}" stroke-width="3" fill="none" />
+                        </svg>
+                    `;
+                }
+
+                const pLabel = document.createElement('div');
+                pLabel.className = `mt-1 bg-black/95 px-2 py-0.5 rounded border border-slate-700 font-orbitron text-[10px] font-bold whitespace-nowrap tracking-wider text-center animate-pulse`;
+                pLabel.style.boxShadow = `0 2px 8px ${glowColor}`;
+                pLabel.style.borderColor = mainColor;
+                pLabel.innerText = vocab.en.toUpperCase();
+
+                if (powerupType) {
+                    const powBadge = document.createElement('span');
+                    powBadge.className = "text-[9px] text-[#39ff14] ml-1 uppercase block text-center animate-pulse";
+                    powBadge.innerText = powerupType === "freeze" ? "❄️ FREEZE" : powerupType === "double" ? "⚡ 2X" : "💥 BOMB";
+                    pLabel.appendChild(powBadge);
+                }
+
+                alienEl.innerHTML = alienSVG;
+                alienEl.appendChild(pLabel);
+                container.appendChild(alienEl);
+
+                const newAlien = {
+                    id: alienEl.id,
+                    dom: alienEl,
+                    word: vocab.en,
+                    translation: vocab.id,
+                    x: randomX,
+                    y: -80,
+                    width: 80, // Dikecilkan daripada 100
+                    height: 60, // Dikecilkan daripada 75
+                    type: alienType,
+                    powerup: powerupType,
+                    speedFactor: 1.0 + (Math.random() * 0.25 - 0.125),
+                    glowColor: glowColor,
+                    mainColor: mainColor
+                };
+
+                this.aliens.push(newAlien);
+
+                if (!this.activeTarget) {
+                    this.setActiveTarget(newAlien);
+                }
+            },
+
+            getRandomVocab() {
+                let pool = vocabDatabase[this.difficulty];
+                if (!pool || pool.length === 0) pool = vocabDatabase.easy;
+
+                const activeWordsOnScreen = this.aliens.map(a => a.word.toLowerCase());
+
+                const availablePool = pool.filter(item => 
+                    !activeWordsOnScreen.includes(item.en.toLowerCase()) &&
+                    !this.usedVocabHistory.includes(item.en.toLowerCase())
+                );
+
+                let sourcePool = availablePool;
+
+                if (availablePool.length === 0) {
+                    this.usedVocabHistory = [];
+                    sourcePool = pool.filter(item => !activeWordsOnScreen.includes(item.en.toLowerCase()));
+                    if (sourcePool.length === 0) sourcePool = pool;
+                }
+
+                const rand = Math.floor(Math.random() * sourcePool.length);
+                const selected = sourcePool[rand];
+
+                this.usedVocabHistory.push(selected.en.toLowerCase());
+
+                const maxHistoryLimit = Math.min(12, Math.floor(pool.length / 2));
+                if (this.usedVocabHistory.length > maxHistoryLimit) {
+                    this.usedVocabHistory.shift();
+                }
+
+                return selected;
+            },
+
+            setActiveTarget(alien) {
+                this.activeTarget = alien;
+                
+                this.aliens.forEach(a => {
+                    a.dom.classList.remove('scale-110', 'z-20');
+                    const label = a.dom.querySelector('div');
+                    if (label) {
+                        label.style.borderColor = a.mainColor;
+                    }
+                });
+
+                if (alien && alien.dom) {
+                    alien.dom.classList.add('scale-110', 'z-20');
+                    const label = alien.dom.querySelector('div');
+                    if (label) {
+                        label.style.borderColor = "#ff007f";
+                    }
+                    
+                    document.getElementById('active-target-hint').innerText = `${alien.word.toUpperCase()} = ?`;
+                    document.getElementById('active-target-hint').className = "text-sm font-orbitron font-extrabold text-[#ff007f] glow-purple animate-pulse";
+                } else {
+                    document.getElementById('active-target-hint').innerText = "MENANTI MUSUH...";
+                    document.getElementById('active-target-hint').className = "text-sm font-orbitron text-slate-500";
+                }
+
+                this.generateOptions();
+            },
+
+            generateOptions() {
+                const options = [];
+                const optionBtns = document.querySelectorAll('.option-btn');
+
+                if (!this.activeTarget) {
+                    optionBtns.forEach(btn => {
+                        const optText = btn.querySelector('.option-text');
+                        optText.innerText = "-";
+                        btn.classList.remove('border-glow-blue');
+                        btn.classList.add('border-glow-purple');
+                    });
+                    return;
+                }
+
+                const correctAnswer = this.activeTarget.translation;
+                options.push(correctAnswer);
+
+                const allPool = vocabDatabase[this.difficulty] || vocabDatabase.easy;
+                while (options.length < 4) {
+                    const randomChoice = allPool[Math.floor(Math.random() * allPool.length)].id;
+                    if (!options.includes(randomChoice)) {
+                        options.push(randomChoice);
+                    }
+                }
+
+                options.sort(() => Math.random() - 0.5);
+
+                optionBtns.forEach((btn, index) => {
+                    const optText = btn.querySelector('.option-text');
+                    optText.innerText = options[index];
+                    
+                    btn.classList.remove('border-glow-green', 'border-glow-purple');
+                    btn.classList.add('border-glow-blue');
+                });
+            },
+
+            handleAnswerSelection(optionIndex) {
+                if (!this.isPlaying || this.isPaused || !this.activeTarget) return;
+
+                const optionBtns = document.querySelectorAll('.option-btn');
+                const selectedBtn = optionBtns[optionIndex];
+                const selectedText = selectedBtn.querySelector('.option-text').innerText;
+                
+                this.totalShots++;
+
+                if (selectedText === this.activeTarget.translation) {
+                    this.correctShots++;
+                    this.combo++;
+                    
+                    AudioEngine.playLaser();
+                    createLaserBeam(this.activeTarget);
+
+                    selectedBtn.classList.remove('border-glow-blue');
+                    selectedBtn.classList.add('border-glow-green');
+
+                    let scoreAdded = 10 * this.level;
+                    if (this.combo > 2) {
+                        scoreAdded += Math.min(this.combo * 2, 50);
+                    }
+                    if (this.powerups.doubleScore.active) {
+                        scoreAdded *= 2;
+                    }
+                    this.score += scoreAdded;
+                    document.getElementById('hud-score').innerText = this.score.toString().padStart(5, '0');
+
+                    const comboEl = document.getElementById('hud-combo');
+                    if (this.combo >= 2) {
+                        comboEl.innerText = `COMBO x${this.combo}`;
+                        comboEl.classList.remove('hidden');
+                    }
+
+                    const destroyedAlien = this.activeTarget;
+                    this.destroyAlien(destroyedAlien.id);
+
+                    if (destroyedAlien.powerup) {
+                        this.triggerPowerup(destroyedAlien.powerup);
+                    }
+
+                    setTimeout(() => {
+                        this.selectNextTarget();
+                    }, 50);
+
+                } else {
+                    this.combo = 0;
+                    document.getElementById('hud-combo').classList.add('hidden');
+                    
+                    AudioEngine.playError();
+
+                    selectedBtn.classList.add('border-glow-purple');
+                    setTimeout(() => {
+                        selectedBtn.classList.remove('border-glow-purple');
+                    }, 400);
+
+                    this.aliens.forEach(alien => {
+                        alien.y += 30;
+                        alien.dom.style.top = `${alien.y}px`;
+                    });
+
+                    triggerScreenShake();
+                }
+            },
+
+            triggerPowerup(type) {
+                AudioEngine.playPowerup();
+
+                if (type === "freeze") {
+                    this.powerups.freeze.active = true;
+                    this.powerups.freeze.timer = this.powerups.freeze.duration;
+                    document.getElementById('pow-freeze-alert').classList.remove('hidden');
+                    
+                    this.aliens.forEach(a => {
+                        a.dom.classList.add('opacity-80', 'scale-95');
+                    });
+                } else if (type === "double") {
+                    this.powerups.doubleScore.active = true;
+                    this.powerups.doubleScore.timer = this.powerups.doubleScore.duration;
+                    document.getElementById('pow-double-alert').classList.remove('hidden');
+                } else if (type === "bomb") {
+                    if (this.aliens.length > 0) {
+                        const tempAliens = [...this.aliens];
+                        tempAliens.forEach(alien => {
+                            createLaserBeam(alien);
+                            this.destroyAlien(alien.id, false);
+                            
+                            let scoreAdded = 5;
+                            if (this.powerups.doubleScore.active) scoreAdded *= 2;
+                            this.score += scoreAdded;
+                        });
+                        
+                        document.getElementById('hud-score').innerText = this.score.toString().padStart(5, '0');
+                        AudioEngine.playExplosion();
+                        triggerScreenShake();
+                        
+                        this.setActiveTarget(null);
+                    }
+                }
+            },
+
+            destroyAlien(id, spawnParticles = true) {
+                const index = this.aliens.findIndex(a => a.id === id);
+                if (index !== -1) {
+                    const alien = this.aliens[index];
+                    
+                    if (spawnParticles) {
+                        createExplosionParticles(alien.x + alien.width / 2, alien.y + alien.height / 2, alien.mainColor);
+                        AudioEngine.playExplosion();
+                    }
+
+                    if (alien.dom && alien.dom.parentNode) {
+                        alien.dom.parentNode.removeChild(alien.dom);
+                    }
+
+                    this.aliens.splice(index, 1);
+                }
+            },
+
+            selectNextTarget() {
+                if (this.aliens.length > 0) {
+                    let lowestAlien = this.aliens[0];
+                    for (let i = 1; i < this.aliens.length; i++) {
+                        if (this.aliens[i].y > lowestAlien.y) {
+                            lowestAlien = this.aliens[i];
+                        }
+                    }
+                    this.setActiveTarget(lowestAlien);
+                } else {
+                    this.setActiveTarget(null);
+                }
+            },
+
+            updateLivesUI() {
+                const livesContainer = document.getElementById('hud-lives');
+                livesContainer.innerHTML = "";
+                
+                for (let i = 0; i < 3; i++) {
+                    const heart = document.createElement('i');
+                    heart.setAttribute('data-lucide', 'heart');
+                    heart.className = `w-3 h-3 ${i < this.lives ? 'fill-red-500 text-red-500' : 'text-slate-700'}`;
+                    livesContainer.appendChild(heart);
+                }
+                lucide.createIcons();
+            },
+
+            decreaseLife() {
+                this.lives--;
+                this.updateLivesUI();
+                
+                triggerScreenShake();
+                AudioEngine.playError();
+
+                if (this.lives <= 0) {
+                    this.endGame();
+                }
+            },
+
+            togglePause() {
+                if (!this.isPlaying) return;
+                
+                this.isPaused = !this.isPaused;
+                const pauseScreen = document.getElementById('pause-screen');
+                const pauseIcon = document.getElementById('pause-icon');
+
+                if (this.isPaused) {
+                    pauseScreen.classList.remove('hidden');
+                    pauseIcon.setAttribute('data-lucide', 'play');
+                    AudioEngine.stopBgm();
+                } else {
+                    pauseScreen.classList.add('hidden');
+                    pauseIcon.setAttribute('data-lucide', 'pause');
+                    AudioEngine.startBgm();
+                }
+                lucide.createIcons();
+            },
+
+            endGame() {
+                this.isPlaying = false;
+                
+                if (this.levelTimerInterval) clearInterval(this.levelTimerInterval);
+                if (this.spawnTimer) clearInterval(this.spawnTimer);
+
+                AudioEngine.stopBgm();
+                AudioEngine.playGameover();
+
+                if (this.score > this.highscore) {
+                    this.highscore = this.score;
+                    localStorage.setItem('vocab_invaders_highscore', this.highscore);
+                }
+
+                const accuracy = this.totalShots > 0 ? Math.round((this.correctShots / this.totalShots) * 100) : 0;
+
+                document.getElementById('go-score').innerText = this.score.toString().padStart(5, '0');
+                document.getElementById('go-highscore').innerText = this.highscore.toString().padStart(5, '0');
+                document.getElementById('go-level').innerText = `Level ${this.level}`;
+                document.getElementById('go-total-shot').innerText = this.totalShots;
+                document.getElementById('go-accuracy').innerText = `${accuracy}%`;
+                
+                document.getElementById('go-player-title').innerText = `KAPTEN ${this.playerName.toUpperCase()} GAGAL MELINDUNGI BUMI`;
+
+                document.getElementById('gameover-screen').classList.remove('hidden');
+                lucide.createIcons();
+            }
+        };
+
+        // GRAFIK KANVAS & SISTEM ZARAH
+        let starfieldCanvas;
+        let starfieldCtx;
+        let gameCanvas;
+        let gameCtx;
+        let stars = [];
+        let particles = [];
+        let lasers = [];
+        let animationId;
+
+        function initStarfield() {
+            starfieldCanvas = document.getElementById('starfield');
+            starfieldCtx = starfieldCanvas.getContext('2d');
+            
+            gameCanvas = document.getElementById('game-canvas');
+            gameCtx = gameCanvas.getContext('2d');
+
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            stars = [];
+            const starCount = 120;
+            for (let i = 0; i < starCount; i++) {
+                stars.push({
+                    x: Math.random() * starfieldCanvas.width,
+                    y: Math.random() * starfieldCanvas.height,
+                    size: Math.random() * 2 + 0.5,
+                    speed: Math.random() * 1.5 + 0.2,
+                    color: Math.random() > 0.8 ? '#00f0ff' : (Math.random() > 0.8 ? '#bd00ff' : '#ffffff')
+                });
+            }
+        }
+
+        function resizeCanvas() {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+
+            if (starfieldCanvas) {
+                starfieldCanvas.width = width;
+                starfieldCanvas.height = height;
+            }
+
+            if (gameCanvas) {
+                gameCanvas.width = width;
+                gameCanvas.height = height;
+            }
+        }
+
+        function triggerScreenShake() {
+            const body = document.body;
+            body.classList.add('shake-effect');
+            setTimeout(() => {
+                body.classList.remove('shake-effect');
+            }, 400);
+        }
+
+        function createExplosionParticles(x, y, color) {
+            const count = 25;
+            for (let i = 0; i < count; i++) {
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 6 + 2;
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    radius: Math.random() * 4 + 1.5,
+                    color: color || '#00f0ff',
+                    alpha: 1.0,
+                    life: Math.random() * 30 + 20
+                });
+            }
+        }
+
+        function createLaserBeam(alien) {
+            const fromX = gameCanvas.width / 2;
+            const fromY = gameCanvas.height - 130; // Meriam diletakkan lebih bawah
+            
+            const toX = alien.x + alien.width / 2;
+            const toY = alien.y + alien.height / 2;
+
+            lasers.push({
+                fromX: fromX,
+                fromY: fromY,
+                toX: toX,
+                toY: toY,
+                alpha: 1.0,
+                color: alien.powerup ? '#ffea00' : '#00f0ff',
+                width: 5
+            });
+        }
+
+        // GELUNG UTAMA ANIMASI KANVAS
+        function startAnimationLoop() {
+            if (animationId) cancelAnimationFrame(animationId);
+            
+            function animate() {
+                gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+
+                starfieldCtx.fillStyle = 'rgba(3, 0, 30, 0.2)';
+                starfieldCtx.fillRect(0, 0, starfieldCanvas.width, starfieldCanvas.height);
+                
+                stars.forEach(star => {
+                    star.y += star.speed;
+                    if (star.y > starfieldCanvas.height) {
+                        star.y = 0;
+                        star.x = Math.random() * starfieldCanvas.width;
+                    }
+                    
+                    starfieldCtx.beginPath();
+                    starfieldCtx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                    starfieldCtx.fillStyle = star.color;
+                    starfieldCtx.fill();
+                });
+
+                if (Game.isPlaying && !Game.isPaused) {
+                    const thresholdY = gameCanvas.height - 130;
+                    const currentAliens = [...Game.aliens];
+                    
+                    currentAliens.forEach(alien => {
+                        const speedMultiplier = Game.powerups.freeze.active ? 0.15 : 1.0;
+                        const currentSpeed = (Game.baseSpeed + (Game.level * 0.12)) * alien.speedFactor * speedMultiplier;
+                        
+                        alien.y += currentSpeed;
+                        alien.dom.style.top = `${alien.y}px`;
+
+                        if (alien.y >= thresholdY) {
+                            Game.decreaseLife();
+                            createExplosionParticles(alien.x + alien.width/2, thresholdY, '#ff007f');
+                            Game.destroyAlien(alien.id, false);
+                            Game.selectNextTarget();
+                        }
+                    });
+                }
+
+                for (let i = lasers.length - 1; i >= 0; i--) {
+                    const laser = lasers[i];
+                    gameCtx.beginPath();
+                    gameCtx.moveTo(laser.fromX, laser.fromY);
+                    gameCtx.lineTo(laser.toX, laser.toY);
+                    
+                    gameCtx.strokeStyle = laser.color;
+                    gameCtx.lineWidth = laser.width;
+                    gameCtx.lineCap = 'round';
+                    gameCtx.shadowBlur = 15;
+                    gameCtx.shadowColor = laser.color;
+                    gameCtx.globalAlpha = laser.alpha;
+                    gameCtx.stroke();
+                    
+                    gameCtx.shadowBlur = 0;
+                    gameCtx.globalAlpha = 1.0;
+
+                    laser.alpha -= 0.12;
+                    if (laser.alpha <= 0) {
+                        lasers.splice(i, 1);
+                    }
+                }
+
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    const p = particles[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.alpha -= 0.025;
+                    p.life--;
+
+                    gameCtx.beginPath();
+                    gameCtx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    gameCtx.fillStyle = p.color;
+                    gameCtx.globalAlpha = Math.max(0, p.alpha);
+                    gameCtx.fill();
+                    gameCtx.globalAlpha = 1.0;
+
+                    if (p.life <= 0 || p.alpha <= 0) {
+                        particles.splice(i, 1);
+                    }
+                }
+
+                drawDefenseCannon();
+
+                animationId = requestAnimationFrame(animate);
+            }
+            
+            animate();
+        }
+
+        // Lukis Meriam Pertahanan pada Kanvas
+        function drawDefenseCannon() {
+            const centerX = gameCanvas.width / 2;
+            const centerY = gameCanvas.height - 95; // Diturunkan secara kemas
+
+            gameCtx.beginPath();
+            gameCtx.arc(centerX, centerY + 25, 40, Math.PI, 0); // Diperkecil radius ke 40
+            gameCtx.fillStyle = '#1e1b4b';
+            gameCtx.strokeStyle = '#00f0ff';
+            gameCtx.lineWidth = 4;
+            gameCtx.stroke();
+            gameCtx.fill();
+
+            let angle = -Math.PI / 2;
+            if (Game.activeTarget) {
+                const targetX = Game.activeTarget.x + Game.activeTarget.width / 2;
+                const targetY = Game.activeTarget.y + Game.activeTarget.height / 2;
+                angle = Math.atan2(targetY - centerY, targetX - centerX);
+            }
+
+            gameCtx.save();
+            gameCtx.translate(centerX, centerY);
+            gameCtx.rotate(angle);
+
+            gameCtx.fillStyle = '#0f172a';
+            gameCtx.strokeStyle = '#bd00ff';
+            gameCtx.lineWidth = 3;
+            gameCtx.fillRect(-8, -40, 16, 45); // Batang meriam lebih ramping
+            gameCtx.strokeRect(-8, -40, 16, 45);
+
+            let coreColor = '#39ff14';
+            if (Game.powerups.doubleScore.active) coreColor = '#ffd700';
+            if (Game.powerups.freeze.active) coreColor = '#00f0ff';
+            
+            gameCtx.beginPath();
+            gameCtx.arc(0, -12, 5, 0, Math.PI * 2);
+            gameCtx.fillStyle = coreColor;
+            gameCtx.shadowBlur = 8;
+            gameCtx.shadowColor = coreColor;
+            gameCtx.fill();
+
+            gameCtx.restore();
+            gameCtx.shadowBlur = 0;
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            Game.init();
+        });
+    </script>
+</body>
+</html>
